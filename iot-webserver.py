@@ -114,6 +114,7 @@ def getCommand():
 def clearCommand():
     global command
     command = ""
+    return
 
 @app.route('/changeDiode', methods=['GET'])
 def changeDiode():
