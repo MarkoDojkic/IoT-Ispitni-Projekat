@@ -1,1 +1,1 @@
-web: gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker iot-webserver:app
+web: gunicorn iot-webserver:app
