@@ -1,4 +1,5 @@
 import imp
+import json
 from flask import Flask, render_template, jsonify, request
 #import serial
 from threading import Thread
@@ -100,15 +101,23 @@ def dashboard():
     return render_template("dashboard.html")
 
 @app.route('/commandData', methods=['GET'])
-def updateCommand():
+def getCommand():
+    global command
+    app.response_class(
+        response=json.dumps(command),
+        status=200,
+        mimetype='application/json'
+    )
     return command
 
 @app.route('/clearCommand', methods=['GET'])
 def clearCommand():
+    global command
     command = ""
 
 @app.route('/changeDiode', methods=['GET'])
 def changeDiode():
+    global command
     command = "ledSwitch"
     return render_template("dashboard.html")
 
