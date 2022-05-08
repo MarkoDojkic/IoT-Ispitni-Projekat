@@ -68,15 +68,21 @@
               </table>
         </div>
         -->
-        <a href="/changeDiode" type="button" class="btn btn-danger" class="block">Change diode</a></td>
-        <a href="/openCloseDoors" type="button" class="btn btn-primary" class="block">Open/Close doors</a></td>
-
+        <div>
+            <blockquote class="blockquote">
+                <p class="mb-0 text-info">Status: {{status}}</p>
+                <p class="mb-0 text-danger">Poruka o greški: {{errorMessage}}</p>
+            </blockquote>
+            <a href="/changeDiode" type="button" class="btn btn-danger" class="block">Change diode</a></td>
+            <a href="/openCloseDoors" type="button" class="btn btn-primary" class="block">Open/Close doors</a></td>
+        </div>
         <div class="input-group mb-3">
             <input type="number" class="form-control" value="0" placeholder="Input ventilation speed between 0 and 255"
                 aria-label="ventilationSpeed" aria-describedby="basic-addon1" id="ventilationSpeed">
+
+            <button onclick="updateVentSpeed()" href="/changeVentialtionSpeed/" type="button" class="btn btn-primary"
+                class="block">Change ventilation speed</a></td>
         </div>
-        <button onclick="updateVentSpeed()" href="/changeVentialtionSpeed/" type="button" class="btn btn-primary"
-            class="block">Open/Close doors</a></td>
     </div>
     <script>
         function updateVentSpeed() {
