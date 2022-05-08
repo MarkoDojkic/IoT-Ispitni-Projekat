@@ -51,7 +51,7 @@ def changeDiode():
 def changeVentialtionSpeed(speed):
     global command, status, errorMessage
     if(command == ""):
-        command = "changeVentialtionSpeed:" + speed
+        command = "*changeVentialtionSpeed:" + speed + ";"
         status = "Promena brzine ventilatora na " + speed + " u toku"
         errorMessage = ""
     else:
