@@ -2,9 +2,9 @@ import json
 from flask import Flask, render_template
 from flask_cors import CORS
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_mail import Mail, Message
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 
 
 app = Flask(__name__)
@@ -16,10 +16,6 @@ app.config['MAIL_USERNAME'] = 'castleville.crowns@gmail.com'
 app.config['MAIL_PASSWORD'] = "Alastair"
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
-
-mailSendScheduler = BlockingScheduler()
-
-mailSendScheduler.start()
 
 CORS(app)
 cors = CORS(app, resource={
@@ -87,10 +83,9 @@ def openCloseDoors():
     return render_template("dashboard.html", status=status, errorMessage=errorMessage)
 
 @app.route('/sendEmail', methods=['GET'])
-@mailSendScheduler.scheduled_job('interval', hour=0) #schedule auto send mail at midnight
 def sendEmail():
     mail = Mail(app)
-    subject = "Izveštaj o stanju IoT sistema - {}".format(datetime.now().strftime("%d.%m.%Y"))
+    subject = "Izveštaj o stanju IoT sistema - {}".format((datetime.now()- timedelta(days=1)).strftime("%d.%m.%Y"))
 
     thingspeakData = requests.get("https://api.thingspeak.com/channels/1726262/feeds.json?results")
     feedEntriesJSON = thingspeakData.json()["feeds"]
@@ -102,7 +97,7 @@ def sendEmail():
     previousRelayState = -1
 
     for feedEntry in feedEntriesJSON:
-        if(datetime.strptime(feedEntry["created_at"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d") == datetime.now().strftime("%Y-%m-%d")):
+        if(datetime.strptime(feedEntry["created_at"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d") == (datetime.now()- timedelta(days=1)).strftime("%Y-%m-%d")):
             if(feedEntry["field6"] != None): temperatureValues.append(float(feedEntry["field6"]))
             if(feedEntry["field4"] != None): illuminationLuxValues.append(float(feedEntry["field4"]))
             if(feedEntry["field3"] != None and int(feedEntry["field3"]) == 1): doorOpenedCount += 1
@@ -116,7 +111,7 @@ Prosečna vrednost temperature: {} °C\n\
 Prosečna osvetljenost senzora: {} Lux\n\
 Ukupan broj otvaranja vrata: {}\n\
 Ukupan broj promena stanja na releju diode/svetla: {}\
-    ".format(datetime.now().strftime("%d.%m.%Y"), 
+    ".format((datetime.now()- timedelta(days=1)).strftime("%d.%m.%Y"), 
         round(sum(temperatureValues)/len(temperatureValues), 2) if len(temperatureValues) > 0 else 0.0,
         round(sum(illuminationLuxValues)/len(illuminationLuxValues), 2) if len(temperatureValues) > 0 else 0.0,
         doorOpenedCount, relayStateChangeCount)
@@ -127,4 +122,7 @@ Ukupan broj promena stanja na releju diode/svetla: {}\
 
     mail.send(message)
 if __name__ == "__main__":
+    mailSendingBackgroundScheduler = BackgroundScheduler()
+    mailSendingBackgroundScheduler.add_job(sendEmail, 'interval', hours=24)
+    mailSendingBackgroundScheduler.start()
     app.run(port=5000, debug=True)

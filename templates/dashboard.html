@@ -16,17 +16,19 @@
     <div>
         <blockquote class="blockquote">
             <p class="mb-0 text-info">Status: {{status}}</p>
-            <p class="mb-0 text-danger">Poruka o greški: {{errorMessage}}</p>
+            <p class="mb-0 text-danger">Poruka o grešci: {{errorMessage}}</p>
         </blockquote>
-        <a href="/changeDiode" type="button" class="btn btn-danger" class="block">Change diode</a></td>
-        <a href="/openCloseDoors" type="button" class="btn btn-primary" class="block">Open/Close doors</a></td>
+        <a href="/changeRelay" type="button" class="btn btn-danger" class="block">Promeni stanje releja
+            (diode/svetla)</a></td>
+        <a href="/openCloseDoors" type="button" class="btn btn-primary" class="block">Otvori/Zatvori vrata</a></td>
     </div>
+    </br>
     <div class="input-group mb-3">
-        <input type="number" class="form-control" value="0" placeholder="Input ventilation speed between 0 and 255"
-            aria-label="ventilationSpeed" aria-describedby="basic-addon1" id="ventilationSpeed">
+        <input type="number" class="form-control" value="0" min="0" max="255" aria-label="ventilationSpeed"
+            aria-describedby="basic-addon1" id="ventilationSpeed">
 
-        <button onclick="updateVentSpeed()" href="/changeVentialtionSpeed/" type="button" class="btn btn-primary"
-            class="block">Change ventilation speed</a></td>
+        <button onclick="updateVentSpeed()" type="button" class="btn btn-primary" class="block">Promeni brzinu
+            ventilatora</button>
     </div>
     <script>
         window.setInterval('refresh()', 10000);
@@ -36,7 +38,10 @@
         }
 
         function updateVentSpeed() {
-            let ventilationSpeed = document.getElementById(ventilationSpeed).value
+            let ventilationSpeed = document.getElementById("ventilationSpeed").value
+            if (ventilationSpeed < 0 || ventilationSpeed > 255) {
+                alert("Brzina ventilatora mora biti celobrojna vrednost između 0 i 255")
+            }
             window.location.href = "/changeVentilationSpeed/" + ventilationSpeed
         }
     </script>
