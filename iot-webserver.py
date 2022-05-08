@@ -35,7 +35,6 @@ errorMessage=""
 @app.route('/')
 def dashboard():
     global status, errorMessage
-    app.apscheduler.add_job(func=sendEmail, trigger='date', args=[i], id="meilSendDailyTask")
     return render_template("dashboard.html", status=status, errorMessage=errorMessage)
 
 @app.route('/getCommand', methods=['GET'])
