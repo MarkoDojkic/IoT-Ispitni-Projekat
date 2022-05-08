@@ -130,5 +130,17 @@ def changeDiode():
     command = "ledSwitch"
     return render_template("dashboard.html")
 
+@app.route('/changeVentialtionSpeed/<speed>', methods=['GET'])
+def changeVentialtionSpeed(speed):
+    global command
+    command = "changeVentialtionSpeed:" + speed
+    return render_template("dashboard.html")
+
+@app.route('/openCloseDoors', methods=['GET'])
+def openCloseDoors():
+    global command
+    command = "openCloseDoors"
+    return render_template("dashboard.html")
+
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
