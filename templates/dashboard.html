@@ -29,9 +29,15 @@
             class="block">Change ventilation speed</a></td>
     </div>
     <script>
+        window.setInterval('refresh()', 10000);
+
+        function refresh() {
+            window.location.href = "/"
+        }
+
         function updateVentSpeed() {
             let ventilationSpeed = document.getElementById(ventilationSpeed).value
-            window.location.href = "/changeVentialtionSpeed/" + ventilationSpeed
+            window.location.href = "/changeVentilationSpeed/" + ventilationSpeed
         }
     </script>
 </body>
