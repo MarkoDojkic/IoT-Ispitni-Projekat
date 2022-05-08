@@ -5,84 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>IoT control</title>
-
+    <title>IoT ispit kontrola Arduina</title>
 </head>
 
-<body>
-    <h1>IOT Control Marko Dojkic</h1>
+<body class="bg-dark">
+    <h1 class="text-white">IoT ispit kontrola Arduina Marko Dojkić 2018/201682</h1>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-    <div class="container">
-        <!--
-        <div>
-            <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">PIN</th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col">Value</th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
+    <div>
+        <blockquote class="blockquote">
+            <p class="mb-0 text-info">Status: {{status}}</p>
+            <p class="mb-0 text-danger">Poruka o greški: {{errorMessage}}</p>
+        </blockquote>
+        <a href="/changeDiode" type="button" class="btn btn-danger" class="block">Change diode</a></td>
+        <a href="/openCloseDoors" type="button" class="btn btn-primary" class="block">Open/Close doors</a></td>
+    </div>
+    <div class="input-group mb-3">
+        <input type="number" class="form-control" value="0" placeholder="Input ventilation speed between 0 and 255"
+            aria-label="ventilationSpeed" aria-describedby="basic-addon1" id="ventilationSpeed">
 
-                    {% for i in range(18)%}
-                        
-                        <tr>
-                            <th scope="row"> {{ i + 1}}</th>
-                            <td>
-                                <div class="d-grid">
-                                    <a href="/on/{{ i + 1 }}" type="button" class="btn btn-success" class="block">On</a></td>
-                                </div>
-                            <td>
-                                <div class="d-grid">
-                                    <a href="/off/{{ i + 1 }}" type="button" class="btn btn-danger">Off</a>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group mb-3">
-                                    <input type="number" class="form-control" value="0" placeholder="Value" aria-label="Value" aria-describedby="basic-addon1" id="{{i+1}}">
-                              </div>
-                            </td>
-                            <td>
-                                <div class="d-grid">
-                                    <button onclick="setValue({{i + 1}}, true)" type="button" class="btn btn-primary">Set digital</button>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-grid">
-                                    <button onclick="setValue({{i + 1}}, false)" type="button" class="btn btn-secondary">Set analog</button>
-                                </div>
-                            </td>
-                          </tr>
-                          <tr>
-                              
-                          </tr>
-                    {% endfor %}
-                </tbody>
-              </table>
-        </div>
-        -->
-        <div>
-            <blockquote class="blockquote">
-                <p class="mb-0 text-info">Status: {{status}}</p>
-                <p class="mb-0 text-danger">Poruka o greški: {{errorMessage}}</p>
-            </blockquote>
-            <a href="/changeDiode" type="button" class="btn btn-danger" class="block">Change diode</a></td>
-            <a href="/openCloseDoors" type="button" class="btn btn-primary" class="block">Open/Close doors</a></td>
-        </div>
-        <div class="input-group mb-3">
-            <input type="number" class="form-control" value="0" placeholder="Input ventilation speed between 0 and 255"
-                aria-label="ventilationSpeed" aria-describedby="basic-addon1" id="ventilationSpeed">
-
-            <button onclick="updateVentSpeed()" href="/changeVentialtionSpeed/" type="button" class="btn btn-primary"
-                class="block">Change ventilation speed</a></td>
-        </div>
+        <button onclick="updateVentSpeed()" href="/changeVentialtionSpeed/" type="button" class="btn btn-primary"
+            class="block">Change ventilation speed</a></td>
     </div>
     <script>
         function updateVentSpeed() {
