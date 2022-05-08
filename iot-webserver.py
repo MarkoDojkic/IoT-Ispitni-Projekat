@@ -1,6 +1,7 @@
 import imp
 import json
 from flask import Flask, render_template, jsonify, request
+from flask_cors import CORS
 #import serial
 from threading import Thread
 import time
@@ -92,6 +93,13 @@ def getReadMessage(controllerId):
 
 """
 app = Flask(__name__)
+
+CORS(app)
+cors = CORS(app, resource={
+    r"/*":{
+        "origins":"*"
+    }
+})
 
 command=""
 
