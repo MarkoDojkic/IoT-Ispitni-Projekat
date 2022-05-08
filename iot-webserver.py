@@ -55,7 +55,7 @@ def turnOn(pin_id):
     global serialConnection
     text = getWriteMessage(0, pin_id, 1)
     serialConnection.write(text.encode('ascii'))
-    return render_template("dashboard.html")
+    return render_template("dashboard.html", status, errorMessage)
     # return jsonify(isError=False, message="Success", statusCode=200, data=pin_id)
 
 @app.route('/off/<pin_id>', methods=['GET'])
@@ -63,7 +63,7 @@ def turnOff(pin_id):
     global serialConnection
     text = getWriteMessage(0, pin_id, 0)
     serialConnection.write(text.encode('ascii'))
-    return render_template("dashboard.html")
+    return render_template("dashboard.html", status, errorMessage)
     # return jsonify(isError=False, message="Success", statusCode=200, data=pin_id)
 
 @app.route('/setDigital/<pin_id>/<value>', methods=['GET'])
@@ -76,14 +76,14 @@ def setDigital(pin_id, value):
     
     text = getWriteMessage(0, pin_id, int(value))
     serialConnection.write(text.encode('ascii'))
-    return render_template("dashboard.html")
+    return render_template("dashboard.html", status, errorMessage)
 
 @app.route('/setAnalog/<pin_id>/<value>', methods=['GET'])
 def setAnalog(pin_id, value):
     global serialConnection
     text = getWriteMessage(0, pin_id, value)
     serialConnection.write(text.encode('ascii'))
-    return render_template("dashboard.html")
+    return render_template("dashboard.html", status, errorMessage)
 
 def getWriteMessage(controllerId, pin, value):
     return str(controllerId) + ":W:" + str(pin) + ":" + str(value) + ";"
@@ -102,11 +102,13 @@ cors = CORS(app, resource={
 })
 
 command=""
+status=""
+errorMessage=""
 
 @app.route('/')
 def dashboard():
-    global objectDic
-    return render_template("dashboard.html")
+    global status, errorMessage
+    return render_template("dashboard.html", status, errorMessage)
 
 @app.route('/commandData', methods=['GET'])
 def getCommand():
@@ -126,21 +128,37 @@ def clearCommand():
 
 @app.route('/changeDiode', methods=['GET'])
 def changeDiode():
-    global command
-    command = "ledSwitch"
-    return render_template("dashboard.html")
+    global command, status, errorMessage
+    if(command == ""):
+        command = "ledSwitch"
+        status = "Promena stanja diode u toku"
+        errorMessage = ""
+    else:
+        errorMessage = "Već je poslat neki zahtev. Nemoguće je poslati drugi zahtev."
+    return render_template("dashboard.html", status, errorMessage)
 
 @app.route('/changeVentialtionSpeed/<speed>', methods=['GET'])
 def changeVentialtionSpeed(speed):
-    global command
-    command = "changeVentialtionSpeed:" + speed
-    return render_template("dashboard.html")
+    global command, status, errorMessage
+    if(command == ""):
+        command = "changeVentialtionSpeed:" + speed
+        status = "Promena brzine ventilatora na " + speed + " u toku"
+        errorMessage = ""
+    else:
+        errorMessage = "Već je poslat neki zahtev. Nemoguće je poslati drugi zahtev."
+    return render_template("dashboard.html", status, errorMessage)
 
 @app.route('/openCloseDoors', methods=['GET'])
 def openCloseDoors():
-    global command
+    global command, status, errorMessage
     command = "openCloseDoors"
-    return render_template("dashboard.html")
+    if(command == ""):
+        command = "openCloseDoors" 
+        status = "Otvaranje/zatvaranje vrata u toku"
+        errorMessage = ""
+    else:
+        errorMessage = "Već je poslat neki zahtev. Nemoguće je poslati drugi zahtev."
+    return render_template("dashboard.html", status, errorMessage)
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
