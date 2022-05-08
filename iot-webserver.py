@@ -61,7 +61,6 @@ def changeVentialtionSpeed(speed):
 @app.route('/openCloseDoors', methods=['GET'])
 def openCloseDoors():
     global command, status, errorMessage
-    command = "openCloseDoors"
     if(command == ""):
         command = "openCloseDoors" 
         status = "Otvaranje/zatvaranje vrata u toku"
