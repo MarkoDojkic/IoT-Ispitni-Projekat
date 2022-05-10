@@ -128,12 +128,12 @@ def updateRelayState(relayState):
     requests.get("https://api.thingspeak.com/update?api_key=78YAN1V93W693DPA&field1=" + relayState)
 
 @app.route('/arduino/doorUpdate/<doorUpdate>', methods=['GET'])
-def updateRelayState(doorUpdate):
+def updateDoorState(doorUpdate):
     #change door icon to opened/closed
     requests.get("https://api.thingspeak.com/update?api_key=78YAN1V93W693DPA&field3=" + doorUpdate)
 
 @app.route('/arduino/updateReadings', methods=['GET'])
-def updateRelayState():
+def updateReadings():
     #display readings
     ventilation = request.args.get('field2', default = 1, type = str)
     illuminationLux = request.args.get('field4', default = 1, type = str)
