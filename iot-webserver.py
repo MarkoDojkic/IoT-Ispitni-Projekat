@@ -47,7 +47,7 @@ def getCommand():
 def clearCommand():
     global command
     command = ""
-    return
+    return '', 200
 
 @app.route('/changeRelay', methods=['GET'])
 def changeDiode():
@@ -121,6 +121,26 @@ Ukupan broj promena stanja na releju diode/svetla: {}\
     message.body = body
 
     mail.send(message)
+
+@app.route('/arduino/relayState/<relayState>', methods=['GET'])
+def updateRelayState(relayState):
+    #change relay icon to state x
+    requests.get("https://api.thingspeak.com/update?api_key=78YAN1V93W693DPA&field1=" + relayState)
+
+@app.route('/arduino/doorUpdate/<doorUpdate>', methods=['GET'])
+def updateDoorState(doorUpdate):
+    #change door icon to opened/closed
+    requests.get("https://api.thingspeak.com/update?api_key=78YAN1V93W693DPA&field3=" + doorUpdate)
+
+@app.route('/arduino/updateReadings', methods=['GET'])
+def updateReadings():
+    #display readings
+    ventilation = request.args.get('field2', default = 1, type = str)
+    illuminationLux = request.args.get('field4', default = 1, type = str)
+    illuminationPercentage = request.args.get('field5', default = 1, type = str)
+    tempCelsius = request.args.get('field6', default = 1, type = str)
+    requests.get("https://api.thingspeak.com/update?api_key=78YAN1V93W693DPA&field2=" + ventilation + "&field4=" + illuminationLux + "&field5=" + illuminationPercentage + "&field6=" + tempCelsius)
+
 if __name__ == "__main__":
     mailSendingBackgroundScheduler = BackgroundScheduler()
     mailSendingBackgroundScheduler.add_job(sendEmail, 'interval', hours=24)
