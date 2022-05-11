@@ -1,0 +1,46 @@
+<div id="turboFlaskTarget" class="turboFlaskTarget">
+    <div>
+        <blockquote class="blockquote">
+            <p class="text-info">Status: {{status}}</p>
+            <p class="text-danger">Poruka o grešci: {{errorMessage}}</p>
+        </blockquote>
+    </div>
+    <div>
+        <div class="row text-center ms-5">
+            <div class="col-2">
+                <a href="/changeRelay" type="button" class="btn btn-danger" class="block">Promeni stanje releja
+                    (diode/svetla)</a>
+            </div>
+            <div class="col-2">
+                <a href="/openCloseDoors" type="button" class="btn btn-primary" class="block">Otvori/Zatvori
+                    vrata</a>
+            </div>
+
+            <div class="col-1">
+                <p class="text-danger">
+                    Relej je {{ "OTVOREN" if relayStatus_display == "1" else "ZATVOREN" }}
+                </p>
+            </div>
+            <div class="col-1">
+                <p class="text-primary">
+                    Vrata su </br> {{ "OTVORENA" if doorStatus_display == "1" else "ZATVORENA" }}
+                </p>
+            </div>
+            <div class="col-2">
+                <p class="text-secondary">
+                    Brzina ventilacije: </br> {{ventilation_display}}
+                </p>
+            </div>
+            <div class="col-2">
+                <p class="text-warning">
+                    Osvetljenost: </br> {{illuminationLux_display}} ({{illuminationPercentage_display}})
+                </p>
+            </div>
+            <div class="col-1">
+                <p class="text-danger">
+                    Temperatura: {{tempCelsius_display}}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
