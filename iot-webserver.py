@@ -45,7 +45,7 @@ def before_first_request():
 def updateFrontend():
     with app.app_context():
         while True:
-            time.sleep(2)
+            time.sleep(1)
             turbo.push(turbo.replace(render_template("dynamicData.html", status=status, errorMessage=errorMessage, relayStatus_display = relayStatus_display, doorStatus_display = doorStatus_display, ventilation_display = ventilation_display, illuminationLux_display = illuminationLux_display, illuminationPercentage_display = illuminationPercentage_display, tempCelsius_display = tempCelsius_display),"turboFlaskTarget"))
 
 @app.route('/')
@@ -63,7 +63,7 @@ def getCommand():
         mimetype='application/json'
     )
 
-    return command
+    return command, 200
 
 @app.route('/clearCommand', methods=['GET'])
 def clearCommand():
@@ -75,7 +75,7 @@ def clearCommand():
 def changeDiode():
     global command, status, errorMessage
     if(command == ""):
-        command = "relaySwitch"
+        command = "|relaySwitch|"
         status = "Promena stanja releja diode/svetla u toku!"
         errorMessage = ""
     else:
@@ -86,7 +86,7 @@ def changeDiode():
 def changeVentialtionSpeed(speed):
     global command, status, errorMessage
     if(command == ""):
-        command = "$changeVentilationSpeed$" + speed + "$"
+        command = "|$changeVentilationSpeed$" + speed + "$|"
         status = "Promena brzine ventilatora na " + speed + " u toku!"
         errorMessage = ""
     else:
@@ -97,8 +97,8 @@ def changeVentialtionSpeed(speed):
 def openCloseDoors():
     global command, status, errorMessage
     if(command == ""):
-        command = "openCloseDoors" 
-        status = "Otvaranje/zatvaranje vrata u toku!"
+        command = "|openCloseDoors|" 
+        status = "Otvaranje" if relayStatus_display != "1" else "Zatvaranje" + " vrata u toku!"
         errorMessage = ""
     else:
         errorMessage = "Već je poslat neki zahtev. Nemoguće je poslati drugi zahtev!"

@@ -8,12 +8,12 @@
     <div>
         <div class="row text-center ms-5">
             <div class="col-2">
-                <a href="/changeRelay" type="button" class="btn btn-danger" class="block">Promeni stanje releja
-                    (diode/svetla)</a>
+                <button onclick="sendAjaxRequest('/changeRelay')" type="button" class="btn btn-danger"
+                    class="block">Promeni stanje releja (diode/svetla)</a>
             </div>
             <div class="col-2">
-                <a href="/openCloseDoors" type="button" class="btn btn-primary" class="block">Otvori/Zatvori
-                    vrata</a>
+                <button onclick="sendAjaxRequest('/openCloseDoors')" type="button" class="btn btn-primary"
+                    class="block">{{ "OTVORI" if relayStatus_display != "1" else "ZATVORI" }} vrata</a>
             </div>
 
             <div class="col-1">
@@ -43,4 +43,12 @@
             </div>
         </div>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        function sendAjaxRequest(ajaxRequest) {
+            $.ajax({
+                url: ajaxRequest,
+            })
+        }
+    </script>
 </div>
