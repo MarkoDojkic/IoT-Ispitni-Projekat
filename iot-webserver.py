@@ -1,5 +1,8 @@
 import json
+import threading
+import time
 from flask import Flask, render_template
+from turbo_flask import Turbo
 from flask_cors import CORS
 import requests
 from datetime import datetime, timedelta
@@ -8,6 +11,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 
 app = Flask(__name__)
+turbo = Turbo(app)
 #Mail config
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
@@ -27,20 +31,38 @@ cors = CORS(app, resource={
 command=""
 status=""
 errorMessage=""
+relayStatus_display = ""
+doorStatus_display = ""
+ventilation_display = ""
+illuminationLux_display = ""
+illuminationPercentage_display  = ""
+tempCelsius_display = ""
+
+@app.before_first_request
+def before_first_request():
+    threading.Thread(target=updateFrontend).start()
+
+def updateFrontend():
+    with app.app_context():
+        while True:
+            time.sleep(2)
+            turbo.push(turbo.replace(render_template("dynamicData.html", status=status, errorMessage=errorMessage, relayStatus_display = relayStatus_display, doorStatus_display = doorStatus_display, ventilation_display = ventilation_display, illuminationLux_display = illuminationLux_display, illuminationPercentage_display = illuminationPercentage_display, tempCelsius_display = tempCelsius_display),"turboFlaskTarget"))
 
 @app.route('/')
 def dashboard():
     global status, errorMessage
-    return render_template("dashboard.html", status=status, errorMessage=errorMessage)
+    return render_template("dashboard.html")
 
 @app.route('/getCommand', methods=['GET'])
 def getCommand():
     global command
+
     app.response_class(
         response=json.dumps(command),
         status=200,
         mimetype='application/json'
     )
+
     return command
 
 @app.route('/clearCommand', methods=['GET'])
@@ -58,7 +80,7 @@ def changeDiode():
         errorMessage = ""
     else:
         errorMessage = "Već je poslat neki zahtev. Nemoguće je poslati drugi zahtev!"
-    return render_template("dashboard.html", status=status, errorMessage=errorMessage)
+    return '', 200
 
 @app.route('/changeVentilationSpeed/<speed>', methods=['GET'])
 def changeVentialtionSpeed(speed):
@@ -69,7 +91,7 @@ def changeVentialtionSpeed(speed):
         errorMessage = ""
     else:
         errorMessage = "Već je poslat neki zahtev. Nemoguće je poslati drugi zahtev!"
-    return render_template("dashboard.html", status=status, errorMessage=errorMessage)
+    return '', 200
 
 @app.route('/openCloseDoors', methods=['GET'])
 def openCloseDoors():
@@ -80,7 +102,7 @@ def openCloseDoors():
         errorMessage = ""
     else:
         errorMessage = "Već je poslat neki zahtev. Nemoguće je poslati drugi zahtev!"
-    return render_template("dashboard.html", status=status, errorMessage=errorMessage)
+    return '', 200
 
 @app.route('/sendEmail', methods=['GET'])
 def sendEmail():
@@ -106,11 +128,11 @@ def sendEmail():
                 relayStateChangeCount += 1
 
     body = "\
-IoT izveštaj za dan {}\n\
-Prosečna vrednost temperature: {} °C\n\
-Prosečna osvetljenost senzora: {} Lux\n\
-Ukupan broj otvaranja vrata: {}\n\
-Ukupan broj promena stanja na releju diode/svetla: {}\
+        IoT izveštaj za dan {}\n\
+        Prosečna vrednost temperature: {} °C\n\
+        Prosečna osvetljenost senzora: {} Lux\n\
+        Ukupan broj otvaranja vrata: {}\n\
+        Ukupan broj promena stanja na releju diode/svetla: {}\
     ".format((datetime.now()- timedelta(days=1)).strftime("%d.%m.%Y"), 
         round(sum(temperatureValues)/len(temperatureValues), 2) if len(temperatureValues) > 0 else 0.0,
         round(sum(illuminationLuxValues)/len(illuminationLuxValues), 2) if len(temperatureValues) > 0 else 0.0,
@@ -121,25 +143,31 @@ Ukupan broj promena stanja na releju diode/svetla: {}\
     message.body = body
 
     mail.send(message)
+    return '', 200
 
 @app.route('/arduino/relayState/<relayState>', methods=['GET'])
 def updateRelayState(relayState):
-    #change relay icon to state x
+    global relayStatus_display
+    relayStatus_display = relayState
     requests.get("https://api.thingspeak.com/update?api_key=78YAN1V93W693DPA&field1=" + relayState)
+    return '', 200
 
-@app.route('/arduino/doorUpdate/<doorUpdate>', methods=['GET'])
-def updateDoorState(doorUpdate):
-    #change door icon to opened/closed
-    requests.get("https://api.thingspeak.com/update?api_key=78YAN1V93W693DPA&field3=" + doorUpdate)
+@app.route('/arduino/doorState/<doorState>', methods=['GET'])
+def updateDoorState(doorState):
+    global doorStatus_display
+    doorStatus_display = str(doorState)
+    requests.get("https://api.thingspeak.com/update?api_key=78YAN1V93W693DPA&field3=" + doorState)
+    return '', 200
 
-@app.route('/arduino/updateReadings', methods=['GET'])
-def updateReadings():
-    #display readings
-    ventilation = request.args.get('field2', default = 1, type = str)
-    illuminationLux = request.args.get('field4', default = 1, type = str)
-    illuminationPercentage = request.args.get('field5', default = 1, type = str)
-    tempCelsius = request.args.get('field6', default = 1, type = str)
+@app.route('/uTS/<ventilation>/<illuminationLux>/<illuminationPercentage>/<tempCelsius>', methods=['GET'])
+def updateReadings(ventilation,illuminationLux,illuminationPercentage,tempCelsius):
+    global ventilation_display, illuminationLux_display, illuminationPercentage_display, tempCelsius_display
+    ventilation_display = ventilation + " RPM"
+    illuminationLux_display = illuminationLux + " LUX"
+    illuminationPercentage_display = illuminationPercentage + "%"
+    tempCelsius_display = tempCelsius + "°C"
     requests.get("https://api.thingspeak.com/update?api_key=78YAN1V93W693DPA&field2=" + ventilation + "&field4=" + illuminationLux + "&field5=" + illuminationPercentage + "&field6=" + tempCelsius)
+    return '', 200
 
 if __name__ == "__main__":
     mailSendingBackgroundScheduler = BackgroundScheduler()
