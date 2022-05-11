@@ -13,7 +13,7 @@ app.config['MAIL_PASSWORD'] = "ebnh gwbg vurt elun"
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 
-@app.route('/', methods=['GET'])
+@app.after_server_start
 def sendMail():
     mail = Mail(app)
     subject = "Izveštaj o stanju IoT sistema - {}".format((datetime.now()- timedelta(days=1)).strftime("%d.%m.%Y"))
@@ -60,3 +60,4 @@ if __name__ == "__main__":
     #mailSendingBackgroundScheduler.add_job(sendMail, 'interval', hours=24)
     #mailSendingBackgroundScheduler.start()
     app.run(port=5000, debug=True)
+    requests.get("/")

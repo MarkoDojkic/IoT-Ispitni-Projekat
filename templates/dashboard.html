@@ -23,6 +23,7 @@
         <button onclick="updateVentSpeed()" type="button" class="btn btn-primary" class="block">Promeni brzinu
             ventilatora</button>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         function updateVentSpeed() {
             let ventilationSpeed = document.getElementById("ventilationSpeed").value
@@ -30,6 +31,10 @@
                 alert("Brzina ventilatora mora biti celobrojna vrednost između 0 i 255")
             }
             window.location.href = "/changeVentilationSpeed/" + ventilationSpeed
+
+            $.ajax({
+                url: "/changeVentilationSpeed/" + ventilationSpeed,
+            })
         }
     </script>
 </body>
