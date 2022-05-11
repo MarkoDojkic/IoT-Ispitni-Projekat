@@ -30,7 +30,6 @@
             if (ventilationSpeed < 0 || ventilationSpeed > 255) {
                 alert("Brzina ventilatora mora biti celobrojna vrednost između 0 i 255")
             }
-            window.location.href = "/changeVentilationSpeed/" + ventilationSpeed
 
             $.ajax({
                 url: "/changeVentilationSpeed/" + ventilationSpeed,
